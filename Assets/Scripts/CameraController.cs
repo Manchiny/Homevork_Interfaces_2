@@ -3,24 +3,23 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] private PlayerView _player;
+    [SerializeField] private PlayerView _playerView;
 
-    private Camera _camera;
+    private Player _player;
     private float _lookAtSpeed = 2f;
-
-    private void Awake()
-    {
-        _camera = Camera.main;
-    }
 
     private void Start()
     {
-        _player.Player.Died += StartLookAt;
+        _player = _playerView.Player;
+        _player.HealthChanged += CheckPlayerHealth;
     }
 
-    private void StartLookAt()
+    private void CheckPlayerHealth()
     {
-        _player.Player.Died -= StartLookAt;
+        if (_player.Health > 0)
+            return;
+
+        _player.HealthChanged -= CheckPlayerHealth;
         StartCoroutine(LookAt());
     }
 
@@ -28,7 +27,7 @@ public class CameraController : MonoBehaviour
     {
         while (Application.isFocused)
         {
-            var targetRotation = Quaternion.LookRotation(_player.transform.position - transform.position);
+            var targetRotation = Quaternion.LookRotation(_playerView.transform.position - transform.position);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _lookAtSpeed * Time.deltaTime);
             yield return null;
         }
@@ -36,6 +35,6 @@ public class CameraController : MonoBehaviour
 
     private void OnDisable()
     {
-        _player.Player.Died -= StartLookAt;
+        _player.HealthChanged -= CheckPlayerHealth;
     }
 }

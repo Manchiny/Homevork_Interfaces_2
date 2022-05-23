@@ -22,13 +22,13 @@ public class PlayerView : MonoBehaviour
         Player = new Player(this);
     }
 
-    public void OnGetDamage()
+    public void GetDamage()
     {
         _animator.StopPlayback();
         _animator.CrossFade(AnimationsHashBase.GetDamage, 0.025f);
     }
 
-    public void OnDie()
+    public void Die()
     {
         _animator.CrossFade(AnimationsHashBase.Dying, 0.2f);
     }

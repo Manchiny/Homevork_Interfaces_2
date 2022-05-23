@@ -25,9 +25,7 @@ public class HealthBar : MonoBehaviour
 
         _player = player;
 
-        _player.Damaged += OnHealthChanged;
-        _player.Healed += OnHealthChanged;
-        _player.Died += OnHealthChanged;
+        _player.HealthChanged += OnHealthChanged;
     }
 
     public void OnHealthChanged()
@@ -40,8 +38,6 @@ public class HealthBar : MonoBehaviour
 
     private void OnDisable()
     {
-        _player.Damaged -= OnHealthChanged;
-        _player.Healed -= OnHealthChanged;
-        _player.Died -= OnHealthChanged;
+        _player.HealthChanged -= OnHealthChanged;
     }
 }
