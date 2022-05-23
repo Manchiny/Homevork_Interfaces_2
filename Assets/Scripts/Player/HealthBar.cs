@@ -1,18 +1,23 @@
-using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Slider))]
 public class HealthBar : MonoBehaviour
 {
-    private const float AnimationDuration = 0.75f;
+    private const float AnimationDuration = 0.5f;
+    private const float SsliderErrorRate = 0.01f;
 
     private Slider _slider;
     private Player _player;
-
     private Image _fill;
 
-    private Tween _valueChahgeAnimation;
+    private Coroutine _setSliderValueCoroutine;
+
+    private void OnDisable()
+    {
+        _player.HealthChanged -= OnHealthChanged;
+    }
 
     public void Init(Player player)
     {
@@ -28,16 +33,28 @@ public class HealthBar : MonoBehaviour
         _player.HealthChanged += OnHealthChanged;
     }
 
-    public void OnHealthChanged()
+    private void OnHealthChanged()
     {
-        _valueChahgeAnimation?.Kill();
+        if (_setSliderValueCoroutine != null)
+            StopCoroutine(_setSliderValueCoroutine);
 
-        _valueChahgeAnimation = _slider.DOValue(_player.Health, AnimationDuration).SetLink(gameObject).SetEase(Ease.OutSine)
-            .OnComplete(() => _fill.enabled = _player.Health > 0);
+        _setSliderValueCoroutine = StartCoroutine(SetValue(_player.Health));
     }
 
-    private void OnDisable()
+    private IEnumerator SetValue(float endValue)
     {
-        _player.HealthChanged -= OnHealthChanged;
+        while (Mathf.Abs(endValue - _slider.value) > SsliderErrorRate)
+        {
+            _slider.value = Mathf.MoveTowards(_slider.value, endValue, 1f / AnimationDuration * Time.fixedDeltaTime);
+            yield return null;
+        }
+
+        _slider.value = endValue;
+
+        if (endValue == 0)
+        {
+            _player.HealthChanged -= OnHealthChanged;
+            _fill.enabled = false;
+        }    
     }
 }

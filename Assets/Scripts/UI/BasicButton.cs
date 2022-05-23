@@ -15,17 +15,6 @@ public class BasicButton : Button
     private float _scaleAnimationTime = 0.05f;
     private float _scaleAnimationValue = 0.9f;
 
-    public void AddListener(Action onButtonClick)
-    {
-        _onClickActions.Add(onButtonClick);
-    }
-
-    public void RemoveAllListeners()
-    {
-        _onClickActions?.Clear();
-        onClick.RemoveAllListeners();
-    }
-
     protected override void Awake()
     {
         _transform = GetComponent<RectTransform>();
@@ -37,6 +26,17 @@ public class BasicButton : Button
     protected override void OnDestroy()
     {
         RemoveAllListeners();
+    }
+
+    public void AddListener(Action onButtonClick)
+    {
+        _onClickActions.Add(onButtonClick);
+    }
+
+    public void RemoveAllListeners()
+    {
+        _onClickActions?.Clear();
+        onClick.RemoveAllListeners();
     }
 
     private void OnButtonClick()

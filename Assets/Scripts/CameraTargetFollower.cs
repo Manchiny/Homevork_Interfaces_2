@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class CameraTargetFollower : MonoBehaviour
 {
     [SerializeField] private PlayerView _playerView;
 
@@ -12,6 +12,11 @@ public class CameraController : MonoBehaviour
     {
         _player = _playerView.Player;
         _player.HealthChanged += CheckPlayerHealth;
+    }
+
+    private void OnDisable()
+    {
+        _player.HealthChanged -= CheckPlayerHealth;
     }
 
     private void CheckPlayerHealth()
@@ -31,10 +36,5 @@ public class CameraController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _lookAtSpeed * Time.deltaTime);
             yield return null;
         }
-    }
-
-    private void OnDisable()
-    {
-        _player.HealthChanged -= CheckPlayerHealth;
     }
 }
